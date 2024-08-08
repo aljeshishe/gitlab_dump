@@ -9,9 +9,9 @@ def process(project, REPOS_PATH):
     url = project.ssh_url_to_repo
     try:
         print(f'processing: {url}')
-        if 'git.ringcentral.com' not in url:
-            print('skipping')
-            return
+        # if 'gitlab.alberblanc.com' not in url:
+        #     print('skipping')
+        #     return
 
         path = project.path_with_namespace
         repo_path = REPOS_PATH / path
@@ -20,7 +20,10 @@ def process(project, REPOS_PATH):
 
         name = repo_path.name
         result = subprocess.run(
-            f'git clone --depth 1 --recursive {url} {repo_path} && cd {repo_path.parent} && zip -r -9 {name}.zip {name} >> /dev/null && rm -rf {name}',
+            # clone last commit, pack, remove dir
+            # f'git clone --depth 1 --recursive {url} {repo_path} && cd {repo_path.parent} && zip -r -9 {name}.zip {name} >> /dev/null && rm -rf {name}',
+            # clone repo
+            f'git clone --recursive {url} {repo_path}',
             shell=True)
         result.check_returncode()
 
@@ -34,7 +37,7 @@ def process(project, REPOS_PATH):
 
 def main():
     parser = argparse.ArgumentParser(description='Get all projects from gitlab download and pack al with zip.')
-    parser.add_argument('--url', default='https://git.ringcentral.com/', help='Gitlab url')
+    parser.add_argument('--url', default='https://gitlab.alberblanc.com/', help='Gitlab url')
     parser.add_argument('--token', help='Gitlab private token', required=True)
 
     args = parser.parse_args()
